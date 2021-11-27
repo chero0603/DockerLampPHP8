@@ -1,0 +1,53 @@
+version: '3.7'
+services: 
+  # centos apache
+  web:
+    build: ./docker/web
+    env_file: .env
+    depends_on:
+      - php
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./code:/var/www/html
+    privileged: true
+  # php-fpm
+  php:
+    build: ./docker/php
+    env_file: .env
+    depends_on:
+      - db
+    ports:
+      - 9000:9000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./code:/var/www/html
+  # mysql
+  db:
+    build: ./docker/db
+    env_file: .env
+    ports:
+      - 3306:3306
+    volumes:
+    - ./docker/db/logs:/var/log/mysql
+    - datastore:/var/lib/mysql
+  # phpMyadmin
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    env_file: .env
+    depends_on:
+      - db
+    ports:
+      - 8080:80
+    volumes: 
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/phpmyadmin-misc.ini
+  # smtp
+  smtp:
+    image: schickling/mailcatcher
+    ports:
+      - 1080:1080
+      - 1025:1025
+volumes:
+  datastore:

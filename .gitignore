@@ -1,0 +1,10 @@
+.DS_Store
+/db/logs/*
+!/db/logs/.gitkeep
+/code/*
+!/code/.gitkeep
+/web/logs/*
+!.gitkeep
+
+Thumbs.db
+desktop.ini
