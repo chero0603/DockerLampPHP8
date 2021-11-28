@@ -4,6 +4,7 @@ services:
   web:
     build: ./docker/web
     env_file: .env
+    platform: linux/x86_64
     depends_on:
       - php
     ports:
@@ -28,6 +29,7 @@ services:
   db:
     build: ./docker/db
     env_file: .env
+    platform: linux/x86_64
     ports:
       - 3306:3306
     volumes:
@@ -48,6 +50,6 @@ services:
     image: schickling/mailcatcher
     ports:
       - 1080:1080
-      - 1025:1025
+      - 1026:1025
 volumes:
   datastore:
