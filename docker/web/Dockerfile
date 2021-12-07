@@ -26,6 +26,13 @@ RUN yum --enablerepo=epel -y install nghttp2 && \
 
 RUN gem install mailcatcher
 
+COPY ssl/server.crt /etc/pki/tls/certs/
+COPY ssl/server.key /etc/pki/tls/private/server.key
+COPY ssl/server.csr /etc/pki/tls/private/server.csr
+
+RUN sed -E -i -e 's/\/etc\/pki\/tls\/certs\/localhost\.crt/\/etc\/pki\/tls\/certs\/server.crt/g' /etc/httpd/conf.d/ssl.conf
+RUN sed -E -i -e 's/\/etc\/pki\/tls\/private\/localhost\.key/\/etc\/pki\/tls\/private\/server.key/g' /etc/httpd/conf.d/ssl.conf
+
 RUN sed -i -e "s|LoadModule mpm_prefork_module modules/mod_mpm_prefork.so|#LoadModule mpm_prefork_module modules/mod_mpm_prefork.so|" /etc/httpd/conf.modules.d/00-mpm.conf && \
     sed -i -e "s|#LoadModule mpm_event_module modules/mod_mpm_event.so|LoadModule mpm_event_module modules/mod_mpm_event.so|" /etc/httpd/conf.modules.d/00-mpm.conf
 
@@ -43,5 +50,7 @@ ENV PATH ${node_path}/${node_file_name}/bin:$PATH
 RUN curl https://nodejs.org/dist/v${node_ver}/${node_file_name}.tar.xz > ${node_file_name}.tar.xz \
     && mkdir -p $node_path \
     && tar xJvf ${node_file_name}.tar.xz -C $node_path
+
+EXPOSE 80 443
 
 CMD ["/usr/sbin/httpd", "-DFOREGROUND"]

@@ -4,6 +4,8 @@ ARG DOCKER_UID=1000
 
 RUN usermod -o -u ${DOCKER_UID} www-data
 
+RUN chown -R www-data:${DOCKER_UID} /var/www
+
 COPY www-original.conf /etc/php-fpm.d/www.conf
 
 COPY ./php.ini /usr/local/etc/php/php.ini
